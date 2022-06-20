@@ -1,9 +1,9 @@
 import { Card, Layout, Table } from 'antd';
 import { useEffect } from 'react';
 import { useState } from 'react';
+import { URL } from '../constants';
 import { messages } from '../messages';
 import { renderBoolean } from '../utils';
-import { generateData } from '../utils';
 
 // Pulled out of component as it doesn't depend on anything in dataset.
 const columns = [
@@ -58,14 +58,21 @@ export default function SubmissionsPage() {
 	const [data, setData] = useState([]);
 	const [loading, setLoading] = useState();
 
-	useEffect(() => {
-		if (data.length === 0 && !loading) {
-			setLoading(true);
-			setTimeout(() => {
-				setData(generateData(50).map((item, index) => ({ ...item, index: index + 1 })));
-				setLoading(false);
-			}, 1000);
+	const fetchData = async () => {
+		setLoading(true);
+		try {
+			const data = await fetch(`/api/submission`);
+			const json = await data.json();
+			setData(json);
+		} catch (error) {
+			console.error(error)
+		} finally {
+			setLoading(false);
 		}
+	};
+
+	useEffect(() => {
+		if (data.length === 0 && !loading) fetchData();
 	}, [data, loading]);
 
 	return (

@@ -3,3 +3,5 @@ export const ROUTES = {
 	CONFIRM: '/confirm',
 	SUBMISSION: '/submissions',
 }
+
+export const URL = '';

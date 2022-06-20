@@ -3,7 +3,7 @@ import { Button, Form, Input, InputNumber, Layout } from 'antd';
 import BooleanRadioButton from '../components/BooleanRadioButton';
 import { useNavigate } from 'react-router-dom';
 import { messages } from '../messages';
-import { ROUTES } from '../constants';
+import { ROUTES, URL } from '../constants';
 
 
 export default function FormPage() {
@@ -11,13 +11,16 @@ export default function FormPage() {
 	const [loading, setLoading] = useState(false);
 	const navigate = useNavigate();
 
-	const onFinish = (values) => {
+	const onFinish = async (values) => {
 		setLoading(true);
-		console.log('Received values of form: ', values);
-		setTimeout(() => {
+		try {
+			const res = await fetch(`/api/submit`, { method: 'POST', body: JSON.stringify(values), headers: { 'Content-Type': 'application/json' } });
+			if (res.ok) navigate(ROUTES.CONFIRM, { state: { ...values, timestamp: new Date() } });
+		} catch (error) {
+			console.error(error);
+		} finally {
 			setLoading(false);
-			navigate(ROUTES.CONFIRM, { state: { ...values, timestamp: new Date() } });
-		}, 2000);
+		}
 	};
 
 	return (
